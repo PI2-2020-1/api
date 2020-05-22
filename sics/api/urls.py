@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.urls import path
-from . import views
+from .views import current_user, UserList, TemperatureList, TemperatureDetail
+
 
 urlpatterns = [
-    path('temperatures/', views.TemperatureList.as_view()),
-    path('temperature/<int:pk>/', views.TemperatureDetail.as_view()),
+    path('current_user/', current_user),
+    path('users/', UserList.as_view()),
+    path('temperatures/', TemperatureList.as_view()),
+    path('temperature/<int:pk>/', TemperatureDetail.as_view()),
 ]
