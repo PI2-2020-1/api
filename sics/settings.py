@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import django_heroku
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,8 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
     'rest_framework',
+
+    'allauth',
+    'allauth.account',
+
+    'rest_auth',
+    'rest_auth.registration',
+
     'corsheaders',
+
     'sics.api'
 ]
 
@@ -80,12 +91,12 @@ WSGI_APPLICATION = 'sics.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': 5432
     }
 }
 
@@ -136,6 +147,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'NON_FIELD_ERRORS_KEY': 'global',
 }
 
 # Para solicitações do app React
@@ -143,8 +155,18 @@ REST_FRAMEWORK = {
 #     'localhost:3000',
 # )
 
+# allauth
+
+SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# JWT
+
+REST_USE_JWT = True
+
 JWT_AUTH = {
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'sics.utils.my_jwt_response_handler'
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': timedelta(days=2),
 }
 
 django_heroku.settings(locals())
