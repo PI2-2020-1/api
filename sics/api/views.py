@@ -4,15 +4,21 @@ from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from sics.api.models import Temperature
-from sics.api.serializers import TemperatureSerializer
+from sics.api.models import Sensor
+from sics.api.serializers import SensorSerializer
+from django.shortcuts import get_object_or_404
+from .models import User
+
+class SensorList(generics.ListCreateAPIView):
+    queryset = Sensor.objects.all()
+    serializer_class = SensorSerializer
 
 
-class TemperatureList(generics.ListCreateAPIView):
-    queryset = Temperature.objects.all()
-    serializer_class = TemperatureSerializer
+class SignUpVerification(APIView):
+
+    def get(self, request, cpf):
+        user = get_object_or_404(User, cpf=cpf)
+        return Response(status=200)
 
 
-class TemperatureDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Temperature.objects.all()
-    serializer_class = TemperatureSerializer
+

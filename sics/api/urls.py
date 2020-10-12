@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.urls import path
-from .views import TemperatureList, TemperatureDetail
+from .views import SensorList, SignUpVerification
 
 
 urlpatterns = [
-    path('temperatures/', TemperatureList.as_view()),
-    path('temperature/<int:pk>/', TemperatureDetail.as_view()),
+    path('sensors/', SensorList.as_view()),
+    path('signup/verification/<cpf>', SignUpVerification.as_view())
 ]
