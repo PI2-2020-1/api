@@ -167,6 +167,9 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = "api.User"
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'sics.api.serializers.CustomRegisterSerializer',
+}
 
 # JWT
 

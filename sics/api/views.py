@@ -9,6 +9,7 @@ from sics.api.serializers import SensorSerializer
 from django.shortcuts import get_object_or_404
 from .models import User
 
+
 class SensorList(generics.ListCreateAPIView):
     queryset = Sensor.objects.all()
     serializer_class = SensorSerializer
@@ -19,6 +20,5 @@ class SignUpVerification(APIView):
     def get(self, request, cpf):
         user = get_object_or_404(User, cpf=cpf)
         return Response(status=200)
-
 
 
