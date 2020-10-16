@@ -8,6 +8,7 @@ from sics.api.models import Sensor
 from sics.api.serializers import SensorSerializer
 from django.shortcuts import get_object_or_404
 from .models import User
+from django.http import JsonResponse
 
 
 class SensorList(generics.ListCreateAPIView):
@@ -22,3 +23,8 @@ class SignUpVerification(APIView):
         return Response(status=200)
 
 
+class TelegramVerification(APIView):
+
+    def get(self, request, telegram):
+        user = get_object_or_404(User, telegram=telegram)
+        return JsonResponse({'full_name': user.full_name})
