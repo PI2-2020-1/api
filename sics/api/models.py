@@ -6,14 +6,15 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=70)
     cpf = models.CharField(max_length=12, unique=True)
-    telegram = models.CharField(max_length=30)
+    telegram = models.CharField(max_length=30, unique=True)
+    is_responsible = models.BooleanField(default=False)
 
     def __str__(self):
         return self.full_name
 
 
-class Sensor(models.Model):
+class Plantation(models.Model):
+    farm = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
-    upper_limit = models.FloatField()
-    lower_limit = models.FloatField()
-    ideal_value = models.FloatField()
+    responsible = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='responsible_plantation')
+    employees = models.ManyToManyField(to=User, blank=True, related_name='employee_plantation')
