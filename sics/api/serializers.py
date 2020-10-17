@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from .models import Sensor, User
 from rest_auth.registration.serializers import RegisterSerializer
 from allauth.account import app_settings as allauth_settings
 from allauth.utils import (email_address_exists, get_username_max_length)
 from allauth.account.adapter import get_adapter
+from .models import User
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -19,7 +19,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         if allauth_settings.UNIQUE_EMAIL:
             if email and email_address_exists(email):
                 raise serializers.ValidationError(
-                    _("A user is already registered with this e-mail address."))
+                    "A user is already registered with this e-mail address.")
         return email
 
     def validate_password1(self, password):
@@ -27,7 +27,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 
     def validate(self, data):
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError(_("The two password fields didn't match."))
+            raise serializers.ValidationError("The two password fields didn't match.")
         return data
 
     def get_cleaned_data(self):
@@ -49,7 +49,8 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.save()
         return user
 
-class SensorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['name', 'upper_limit', 'ideal_value', 'lower_limit']
+
+class CustomUserSerializer(serializers.ModelSerializer):  
+    class Meta: 
+        model = User 
+        fields = ('full_name', 'cpf', 'is_active')
