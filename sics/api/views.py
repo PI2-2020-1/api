@@ -1,3 +1,4 @@
+import json
 from django.http import HttpResponseRedirect
 from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view
@@ -41,3 +42,23 @@ class EmployeesList(APIView):
         serializer = CustomUserSerializer(employees, many=True)
 
         return JsonResponse(serializer.data, safe=False)
+    
+    def post(self, request, username, format=None):
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        employee = User.objects.create_user(
+            cpf=data['cpf'],
+            is_active=False,
+            is_responsible=False,
+            username=data['cpf'],
+            telegram=data['cpf']
+        )
+
+        user = get_object_or_404(User, username=username)
+        plantation = get_object_or_404(Plantation, responsible=user.pk)
+        plantation.employees.add(employee)
+
+        return Response(status=200)
+
+        
