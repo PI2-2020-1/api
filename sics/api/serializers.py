@@ -46,6 +46,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         user = adapter.save_user(request, user, self, commit=False)
         user.full_name = self.cleaned_data.get('full_name')
         user.telegram = self.cleaned_data.get('telegram')
+        user.is_active = True
         user.save()
         return user
 
