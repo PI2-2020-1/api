@@ -67,6 +67,7 @@ def create_plantation(farm, name, responsible, employees):
         for e in employees:
             plantation.employees.add(e)
         plantation.save()
+        print('Creating plantation of ' + name + ' for farm ' + farm)
     except IntegrityError:
         raise ValidationError("An error occurred. Stopping the script")
 
@@ -98,8 +99,18 @@ def populate():
         is_responsible=False,
         is_active=True
     )
+
+    user_3 = create_user(
+        full_name='Vinícius Rodrigues Oliveira', 
+        telegram='vinicinoliveira', 
+        username='vinicius',
+        email='vinicius@email.com',
+        cpf='33333333333',
+        is_responsible=False,
+        is_active=False
+    )
     
-    create_plantation('Rancho Bom', 'Milho', user_1, [user_2])
+    create_plantation('Rancho Bom', 'Milho', user_1, [user_2, user_3])
 
     print ('\n------------------------------\n')
     print ('Database populated with sucess')
