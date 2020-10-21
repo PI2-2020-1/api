@@ -109,6 +109,26 @@ def populate():
         is_responsible=False,
         is_active=False
     )
+
+    user_4 = create_user(
+        full_name='Cauê Mateus Oliveira', 
+        telegram='oliveiracaue', 
+        username='caue',
+        email='caue@email.com',
+        cpf='44444444444',
+        is_responsible=False,
+        is_active=False
+    )
+
+    user_5 = create_user(
+        full_name='Thiago Ribeiro Pereira', 
+        telegram='thiagorpereira7', 
+        username='thiago',
+        email='thiago@email.com',
+        cpf='5555555555',
+        is_responsible=False,
+        is_active=True
+    )
     
     create_plantation('Rancho Bom', 'Milho', user_1, [user_2, user_3])
 
