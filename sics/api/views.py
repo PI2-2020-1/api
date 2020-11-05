@@ -34,8 +34,8 @@ class EmployeesList(APIView):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
 
-        if not user.is_responsible:
-            return JsonResponse(data={'message': 'Not responsible'}, status=401)
+        # if not user.is_responsible:
+        #     return JsonResponse(data={'message': 'Not responsible'}, status=401)
 
         plantation = get_object_or_404(Plantation, responsible=user.pk)
         employees = plantation.employees.all()

@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('rest_auth.urls')),
     path('auth/signup/', include('rest_auth.registration.urls')),
-        path('api/', include('sics.api.urls')),
+    path('api/', include('sics.api.urls')),
     path('auth/refresh-token/', refresh_jwt_token),
 
 ]
