@@ -18,3 +18,26 @@ class Plantation(models.Model):
     name = models.CharField(max_length=50)
     responsible = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='responsible_plantation')
     employees = models.ManyToManyField(to=User, blank=True, related_name='employee_plantation')
+
+
+class Parameter(models.Model):
+    WIND = 0
+    SOIL_TEMPERATURE = 1
+    AIR_TEMPERATURE = 2
+    PH = 3
+    SOIL_UMIDITY = 4
+    AIR_UMIDITY = 5
+    RAIN = 6
+
+    parameter_type = models.IntegerField()
+    min_value = models.FloatField()
+    max_value = models.FloatField()
+    plantation = models.ForeignKey(Plantation, on_delete=models.CASCADE)
+
+
+class Reading(models.Model):
+    parameter = models.ForeignKey(Parameter, on_delete=models.DO_NOTHING)
+    value = models.FloatField()
+    time = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+

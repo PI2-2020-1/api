@@ -68,9 +68,16 @@ def create_plantation(farm, name, responsible, employees):
             plantation.employees.add(e)
         plantation.save()
         print('Creating plantation of ' + name + ' for farm ' + farm)
+        return plantation
     except IntegrityError:
         raise ValidationError("An error occurred. Stopping the script")
 
+def create_reading(parameter):
+    for i in range(50):
+        Reading.objects.create(
+            parameter=parameter, 
+            value=randint(2, 40)
+        )
 
 
 def populate():
@@ -130,7 +137,55 @@ def populate():
         is_active=True
     )
     
-    create_plantation('Rancho Bom', 'Milho', user_1, [user_2, user_3, user_4, user_5])
+    plantation_1 = create_plantation('Rancho Bom', 'Milho', user_1, [user_2, user_3, user_4, user_5])
+    
+    print ('Creating parameters\n')
+    par_1 = Parameter.objects.create(
+        parameter_type=Parameter.WIND, 
+        min_value=10, max_value=12, 
+        plantation=plantation_1
+    )
+    par_2 = Parameter.objects.create(
+        parameter_type=Parameter.SOIL_TEMPERATURE, 
+        min_value=20, max_value=25, 
+        plantation=plantation_1
+    )
+    par_3 = Parameter.objects.create(
+        parameter_type=Parameter.AIR_TEMPERATURE, 
+        min_value=25, max_value=30, 
+        plantation=plantation_1
+    )
+    par_4 = Parameter.objects.create(
+        parameter_type=Parameter.PH, 
+        min_value=5, max_value=8, 
+        plantation=plantation_1
+    )
+    par_5 = Parameter.objects.create(
+        parameter_type=Parameter.SOIL_UMIDITY, 
+        min_value=5, max_value=10, 
+        plantation=plantation_1
+    )
+    par_6 = Parameter.objects.create(
+        parameter_type=Parameter.AIR_UMIDITY, 
+        min_value=10, max_value=12, 
+        plantation=plantation_1
+    )
+    par_7 = Parameter.objects.create(
+        parameter_type=Parameter.RAIN, 
+        min_value=5, max_value=12, 
+        plantation=plantation_1
+    )
+
+    print ('Creating readings\n')
+    create_reading(par_1)
+    create_reading(par_2)
+    create_reading(par_3)
+    create_reading(par_4)
+    create_reading(par_5)
+    create_reading(par_6)
+    create_reading(par_7)
+    
+
 
     print ('\n------------------------------\n')
     print ('Database populated with sucess')
@@ -142,9 +197,11 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sics.settings')
 django.setup()
 from django.utils import timezone
-from sics.api.models import User, Plantation
+from sics.api.models import User, Plantation, Parameter, Reading
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from allauth.account.models import EmailAddress
-
+from random import seed
+from random import randint
+seed(1)
 populate()
