@@ -56,7 +56,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = User 
         fields = ('full_name', 'cpf', 'is_active', 'email')
 
+
 class ReadingSerializer(serializers.ModelSerializer):
+    parameter = serializers.SerializerMethodField()
+
     class Meta:
         model = Reading 
         fields = '__all__'
+    
+    def get_parameter(self, instance):
+        return instance.parameter.parameter_type
