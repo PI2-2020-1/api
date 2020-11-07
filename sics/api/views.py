@@ -73,7 +73,7 @@ class LatestData(APIView):
         for p in parameters:
             readings = Reading.objects.filter(
                 station=station_pk,
-                parameter=p 
+                parameter__parameter_type=p 
             ).order_by('-time')
             if readings:
                 latest.append(readings[0])
