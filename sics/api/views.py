@@ -81,6 +81,25 @@ class LatestData(APIView):
         serializer = ReadingSerializer(latest, many=True)
 
         return JsonResponse(serializer.data, safe=False)
+    
+    def post(self, request, station_pk):
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        for obj in data:
+            parameter = get_object_or_404(Parameter, parameter_type=obj['parameter'])
+            reading = Reading.objects.create(
+                parameter=parameter,
+                value=obj["value"],
+                station=get_object_or_404(Station, pk=station_pk)
+            )
+
+            #VERIFICAR SE ESTÁ DENTRO DOS LIMITES AQUI
+
+        #NOTIFICAR BOT AQUI
+    
+        return Response(status=200)
+
 
 
 class Report(APIView):
@@ -95,10 +114,10 @@ class Report(APIView):
    
             readings = Reading.objects.filter(
                 time__range=[data['start'], data['end']],
-                station__in=data['station_pk_list'],
+                station__in=data['station_pk_list'], #CORRIGIR PARA NUM E NÃO PK
                 parameter__parameter_type=p 
             ).order_by('-time')
-            print("aa")
+
             report_list.append(
                 {
                     str(p): ReadingSerializer(readings, many=True).data
