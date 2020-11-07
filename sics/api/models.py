@@ -20,6 +20,10 @@ class Plantation(models.Model):
     employees = models.ManyToManyField(to=User, blank=True, related_name='employee_plantation')
 
 
+class Station(models.Model):
+    number = models.IntegerField()
+
+
 class Parameter(models.Model):
     WIND = 0
     SOIL_TEMPERATURE = 1
@@ -39,5 +43,6 @@ class Reading(models.Model):
     parameter = models.ForeignKey(Parameter, on_delete=models.DO_NOTHING)
     value = models.FloatField()
     time = models.DateTimeField(auto_now=False, auto_now_add=True)
+    station = models.ForeignKey(Station, on_delete=models.DO_NOTHING)
 
 

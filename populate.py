@@ -72,11 +72,12 @@ def create_plantation(farm, name, responsible, employees):
     except IntegrityError:
         raise ValidationError("An error occurred. Stopping the script")
 
-def create_reading(parameter):
-    for i in range(50):
+def create_reading(parameter, station):
+    for i in range(20):
         Reading.objects.create(
             parameter=parameter, 
-            value=randint(2, 40)
+            value=randint(2, 40),
+            station=station
         )
 
 
@@ -176,14 +177,27 @@ def populate():
         plantation=plantation_1
     )
 
+    print ('Creating stations\n')
+    st_1 = Station.objects.create(number=1)
+    st_2 = Station.objects.create(number=2)
+
+
     print ('Creating readings\n')
-    create_reading(par_1)
-    create_reading(par_2)
-    create_reading(par_3)
-    create_reading(par_4)
-    create_reading(par_5)
-    create_reading(par_6)
-    create_reading(par_7)
+    create_reading(par_1, st_1)
+    create_reading(par_2, st_1)
+    create_reading(par_3, st_1)
+    create_reading(par_4, st_1)
+    create_reading(par_5, st_1)
+    create_reading(par_6, st_1)
+    create_reading(par_7, st_1)
+
+    create_reading(par_1, st_2)
+    create_reading(par_2, st_2)
+    create_reading(par_3, st_2)
+    create_reading(par_4, st_2)
+    create_reading(par_5, st_2)
+    create_reading(par_6, st_2)
+    create_reading(par_7, st_2)
     
 
 
@@ -197,7 +211,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sics.settings')
 django.setup()
 from django.utils import timezone
-from sics.api.models import User, Plantation, Parameter, Reading
+from sics.api.models import User, Plantation, Parameter, Reading, Station
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from allauth.account.models import EmailAddress
