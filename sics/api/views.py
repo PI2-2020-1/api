@@ -82,3 +82,31 @@ class LatestData(APIView):
 
         return JsonResponse(serializer.data, safe=False)
 
+
+class Report(APIView):
+
+    def get(self, request):
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        report_list = []
+
+        for p in data['parameter_list']:
+   
+            readings = Reading.objects.filter(
+                time__range=[data['start'], data['end']],
+                station__in=data['station_pk_list'],
+                parameter__parameter_type=p 
+            ).order_by('-time')
+            print("aa")
+            report_list.append(
+                {
+                    str(p): ReadingSerializer(readings, many=True).data
+                }
+            )
+        
+        return JsonResponse(report_list, safe=False)
+
+        
+
+
