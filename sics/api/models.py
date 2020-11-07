@@ -22,6 +22,7 @@ class Plantation(models.Model):
 
 class Station(models.Model):
     number = models.IntegerField()
+    plantation = models.ForeignKey(Plantation, on_delete=models.DO_NOTHING)
 
 
 class Parameter(models.Model):

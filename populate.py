@@ -178,8 +178,8 @@ def populate():
     )
 
     print ('Creating stations\n')
-    st_1 = Station.objects.create(number=1)
-    st_2 = Station.objects.create(number=2)
+    st_1 = Station.objects.create(number=1, plantation=plantation_1)
+    st_2 = Station.objects.create(number=2, plantation=plantation_1)
 
 
     print ('Creating readings\n')
