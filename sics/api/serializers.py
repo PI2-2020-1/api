@@ -3,7 +3,7 @@ from rest_auth.registration.serializers import RegisterSerializer
 from allauth.account import app_settings as allauth_settings
 from allauth.utils import (email_address_exists, get_username_max_length)
 from allauth.account.adapter import get_adapter
-from .models import User
+from .models import User, Reading, Parameter, Plantation
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -55,3 +55,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta: 
         model = User 
         fields = ('full_name', 'cpf', 'is_active', 'email')
+
+class ReadingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reading 
+        fields = '__all__'

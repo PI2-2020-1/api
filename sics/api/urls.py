@@ -7,4 +7,5 @@ urlpatterns = [
     path('signup/verification/<cpf>', views.SignUpVerification.as_view()),
     path('telegram/verification/<telegram>', views.TelegramVerification.as_view()),
     path('employees/<username>', views.EmployeesList.as_view()),
+    path('latest/<station_pk>', views.LatestData.as_view()),
 ]

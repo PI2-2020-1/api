@@ -39,6 +39,11 @@ class Parameter(models.Model):
     max_value = models.FloatField()
     plantation = models.ForeignKey(Plantation, on_delete=models.CASCADE)
 
+    @staticmethod
+    def get_all_types():
+        return [Parameter.WIND, Parameter.SOIL_TEMPERATURE, Parameter.AIR_TEMPERATURE, 
+            Parameter.PH, Parameter.SOIL_UMIDITY, Parameter.AIR_UMIDITY, Parameter.RAIN]
+
 
 class Reading(models.Model):
     parameter = models.ForeignKey(Parameter, on_delete=models.DO_NOTHING)

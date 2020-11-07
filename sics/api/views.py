@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core import serializers
-from .serializers import CustomUserSerializer
-from .models import User, Plantation
+from .serializers import CustomUserSerializer, ReadingSerializer
+from .models import User, Plantation, Reading, Station, Parameter
 
 
 class SignUpVerification(APIView):
@@ -61,4 +61,24 @@ class EmployeesList(APIView):
 
         return Response(status=200)
 
-        
+
+class LatestData(APIView):
+    
+    def get(self, request, station_pk):
+        station = get_object_or_404(Station, pk=station_pk)
+
+        latest = []
+
+        parameters = Parameter.get_all_types()
+        for p in parameters:
+            readings = Reading.objects.filter(
+                station=station_pk,
+                parameter=p 
+            ).order_by('-time')
+            if readings:
+                latest.append(readings[0])
+
+        serializer = ReadingSerializer(latest, many=True)
+
+        return JsonResponse(serializer.data, safe=False)
+
