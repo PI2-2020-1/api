@@ -104,7 +104,7 @@ class LatestData(APIView):
 
 class Report(APIView):
 
-    def get(self, request):
+    def post(self, request):
         str_args = request.body.decode('utf-8')
         data = json.loads(str_args)
 
