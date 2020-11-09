@@ -15,7 +15,7 @@ class SignUpVerification(APIView):
 
     def get(self, request, cpf):
         user = get_object_or_404(User, cpf=cpf)
-        
+
         if user.is_active:
             return Response(status=401)
 
@@ -42,7 +42,7 @@ class EmployeesList(APIView):
         serializer = CustomUserSerializer(employees, many=True)
 
         return JsonResponse(serializer.data, safe=False)
-    
+
     def post(self, request, username, format=None):
         str_args = request.body.decode('utf-8')
         data = json.loads(str_args)
@@ -63,7 +63,7 @@ class EmployeesList(APIView):
 
 
 class LatestData(APIView):
-    
+
     def get(self, request, station_pk):
         station = get_object_or_404(Station, pk=station_pk)
 
@@ -73,7 +73,7 @@ class LatestData(APIView):
         for p in parameters:
             readings = Reading.objects.filter(
                 station=station_pk,
-                parameter__parameter_type=p 
+                parameter__parameter_type=p
             ).order_by('-time')
             if readings:
                 latest.append(readings[0])
@@ -81,25 +81,25 @@ class LatestData(APIView):
         serializer = ReadingSerializer(latest, many=True)
 
         return JsonResponse(serializer.data, safe=False)
-    
+
     def post(self, request, station_pk):
         str_args = request.body.decode('utf-8')
         data = json.loads(str_args)
 
         for obj in data:
-            parameter = get_object_or_404(Parameter, parameter_type=obj['parameter'])
+            parameter = get_object_or_404(
+                Parameter, parameter_type=obj['parameter'])
             reading = Reading.objects.create(
                 parameter=parameter,
                 value=obj["value"],
                 station=get_object_or_404(Station, pk=station_pk)
             )
 
-            #VERIFICAR SE ESTÁ DENTRO DOS LIMITES AQUI
+            # VERIFICAR SE ESTÁ DENTRO DOS LIMITES AQUI
 
-        #NOTIFICAR BOT AQUI
-    
+        # NOTIFICAR BOT AQUI
+
         return Response(status=200)
-
 
 
 class Report(APIView):
@@ -111,21 +111,16 @@ class Report(APIView):
         report_list = []
 
         for p in data['parameter_list']:
-   
+
             readings = Reading.objects.filter(
                 time__range=[data['start'], data['end']],
-                station__in=data['station_pk_list'], #CORRIGIR PARA NUM E NÃO PK
-                parameter__parameter_type=p 
+                # CORRIGIR PARA NUM E NÃO PK
+                station__in=data['station_pk_list'],
+                parameter__parameter_type=p
             ).order_by('-time')
 
             report_list.append(
-                {
-                    str(p): ReadingSerializer(readings, many=True).data
-                }
+                ReadingSerializer(readings, many=True).data
             )
-        
+
         return JsonResponse(report_list, safe=False)
-
-        
-
-
