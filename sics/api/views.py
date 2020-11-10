@@ -95,7 +95,7 @@ class LatestData(APIView):
                 station=get_object_or_404(Station, pk=station_pk)
             )
 
-            # VERIFICAR SE ESTÃO DENTRO DOS LIMITES AQUI
+            # VERIFICAR SE ESTï¿½O DENTRO DOS LIMITES AQUI
 
         # NOTIFICAR BOT AQUI
 
@@ -132,10 +132,8 @@ class Station(APIView):
         plantation = get_object_or_404(Plantation, pk=plantation_pk)
 
         stations = Station.objects.filter(plantation=plantation_pk)
-        if stations:
-            latest.append(stations[0])
 
-        serializer = StationSerializer(latest, many=True)
+        serializer = StationSerializer(stations, many=True)
 
         return JsonResponse(serializer.data, safe=False)
 
