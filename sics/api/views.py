@@ -126,7 +126,7 @@ class Report(APIView):
         return JsonResponse(report_list, safe=False)
 
 
-class Station(APIView):
+class ListStations(APIView):
 
     def get(self, request, plantation_pk):
         plantation = get_object_or_404(Plantation, pk=plantation_pk)
@@ -138,17 +138,17 @@ class Station(APIView):
         return JsonResponse(serializer.data, safe=False)
 
 
-    def post(self, request, plantation_pk):
-        str_args = request.body.decode('utf-8')
-        data = json.loads(str_args)
+    # def post(self, request, plantation_pk):
+    #     str_args = request.body.decode('utf-8')
+    #     data = json.loads(str_args)
 
-        for obj in data:
-            station = Station.objects.create(
-                number=obj["number"],
-                plantation = get_object_or_404(Plantation, pk=plantation_pk)
-            )
+    #     for obj in data:
+    #         station = Station.objects.create(
+    #             number=obj["number"],
+    #             plantation = get_object_or_404(Plantation, pk=plantation_pk)
+    #         )
             
-        return Response(status=200)
+    #     return Response(status=200)
 
 
 

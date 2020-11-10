@@ -8,7 +8,8 @@ urlpatterns = [
     path('telegram/verification/<telegram>', views.TelegramVerification.as_view()),
     path('employees/<username>', views.EmployeesList.as_view()),
     path('latest/<station_pk>', views.LatestData.as_view()),
+    path('parameter/latest/<station_number>/<plantation_pk>', views.LatestParameterData.as_view()),
     path('report', views.Report.as_view()),
-    path('station/<plantation_pk>', views.Station.as_view()),
+    path('stations/<plantation_pk>', views.ListStations.as_view()),
     path('parameter', views.Parameter.as_view()),
 ]
