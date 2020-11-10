@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core import serializers
-from .serializers import CustomUserSerializer, ReadingSerializer
+from .serializers import CustomUserSerializer, ReadingSerializer, StationSerializer, ParameterSerialize
 from .models import User, Plantation, Reading, Station, Parameter
 
 
@@ -95,7 +95,7 @@ class LatestData(APIView):
                 station=get_object_or_404(Station, pk=station_pk)
             )
 
-            # VERIFICAR SE EST√Å DENTRO DOS LIMITES AQUI
+            # VERIFICAR SE EST√O DENTRO DOS LIMITES AQUI
 
         # NOTIFICAR BOT AQUI
 
@@ -124,3 +124,36 @@ class Report(APIView):
             )
 
         return JsonResponse(report_list, safe=False)
+
+
+class Station(APIView):
+
+    def get(self, request, plantation_pk):
+        plantation = get_object_or_404(Plantation, pk=plantation_pk)
+
+        stations = Station.objects.filter(plantation=plantation_pk)
+        if stations:
+            latest.append(stations[0])
+
+        serializer = StationSerializer(latest, many=True)
+
+        return JsonResponse(serializer.data, safe=False)
+
+
+    def post(self, request, plantation_pk):
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        for obj in data:
+            station = Station.objects.create(
+                number=obj["number"],
+                plantation = get_object_or_404(Plantation, pk=plantation_pk)
+            )
+            
+        return Response(status=200)
+
+
+
+class Parameter(APIView):
+    queryset = Parameter.objects.all()
+    serializer_class = ParameterSerialize
