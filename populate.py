@@ -147,7 +147,7 @@ def populate():
         plantation=plantation_1
     )
     par_2 = Parameter.objects.create(
-        parameter_type=Parameter.SOIL_TEMPERATURE, 
+        parameter_type=Parameter.PRESSURE, 
         min_value=20, max_value=25, 
         plantation=plantation_1
     )
