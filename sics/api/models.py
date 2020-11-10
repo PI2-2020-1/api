@@ -27,7 +27,7 @@ class Station(models.Model):
 
 class Parameter(models.Model):
     WIND = 0
-    SOIL_TEMPERATURE = 1
+    PRESSURE = 1
     AIR_TEMPERATURE = 2
     PH = 3
     SOIL_UMIDITY = 4
@@ -41,7 +41,7 @@ class Parameter(models.Model):
 
     @staticmethod
     def get_all_types():
-        return [Parameter.WIND, Parameter.SOIL_TEMPERATURE, Parameter.AIR_TEMPERATURE, 
+        return [Parameter.WIND, Parameter.PRESSURE, Parameter.AIR_TEMPERATURE, 
             Parameter.PH, Parameter.SOIL_UMIDITY, Parameter.AIR_UMIDITY, Parameter.RAIN]
 
 
