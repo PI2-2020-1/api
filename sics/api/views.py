@@ -26,7 +26,9 @@ class TelegramVerification(APIView):
 
     def get(self, request, telegram):
         user = get_object_or_404(User, telegram=telegram)
-        return JsonResponse({'full_name': user.full_name})
+        plantation = user.employee_plantation if user.employee_plantation else user.responsible_plantation
+
+        return JsonResponse({'full_name': user.full_name, 'plantation_pk': plantation})
 
 
 class EmployeesList(APIView):
@@ -152,6 +154,6 @@ class ListStations(APIView):
 
 
 
-class Parameter(APIView):
+class ListUpdateParameter(APIView):
     queryset = Parameter.objects.all()
     serializer_class = ParameterSerialize
