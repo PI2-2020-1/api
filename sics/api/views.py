@@ -26,9 +26,19 @@ class TelegramVerification(APIView):
 
     def get(self, request, telegram):
         user = get_object_or_404(User, telegram=telegram)
-        plantation = user.employee_plantation if user.employee_plantation else user.responsible_plantation
+        
+        if user.responsible_plantation: 
+            plantation = get_object_or_404(Plantation, responsible=user)
+        else: 
+            plantation = get_object_or_404(Plantation, employees__in=user)
 
-        return JsonResponse({'full_name': user.full_name, 'plantation_pk': plantation})
+        stations = Station.objects.filter(plantation__pk=plantation.pk)
+
+        return JsonResponse(
+            {'full_name': user.full_name, 
+            'stations': StationSerializer(stations, many=True).data
+            }
+        )
 
 
 class EmployeesList(APIView):
