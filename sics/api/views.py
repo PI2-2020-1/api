@@ -165,5 +165,17 @@ class ListStations(APIView):
 
 
 class ListUpdateParameter(APIView):
-    queryset = Parameter.objects.all()
-    serializer_class = ParameterSerialize
+
+    def patch(self, request, plantation_pk):
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        for obj in data:
+            parameter = Parameter.objects.update(
+                parameter_type=obj["parameter_type"],
+                min_value=obj["min_value"],
+                max_value=obj["max_value"],
+                plantation = get_object_or_404(Plantation, pk=plantation_pk)
+            )
+            
+        return Response(status=200)
