@@ -8,6 +8,7 @@ class User(AbstractUser):
     cpf = models.CharField(max_length=12, unique=True)
     telegram = models.CharField(max_length=30, unique=True)
     is_responsible = models.BooleanField(default=False)
+    chat_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.full_name
@@ -18,6 +19,16 @@ class Plantation(models.Model):
     name = models.CharField(max_length=50)
     responsible = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='responsible_plantation')
     employees = models.ManyToManyField(to=User, blank=True, related_name='employee_plantation')
+
+    def get_all_users(self):
+        users = []
+
+        users.append(self.responsible)
+
+        for u in self.employees.all():
+            users.append(u)
+        
+        return users
 
 
 class Station(models.Model):
@@ -43,6 +54,15 @@ class Parameter(models.Model):
     def get_all_types():
         return [Parameter.WIND, Parameter.PRESSURE, Parameter.AIR_TEMPERATURE, 
             Parameter.PH, Parameter.SOIL_UMIDITY, Parameter.AIR_UMIDITY, Parameter.RAIN]
+    
+    def get_parameter_name(self):
+        if self.parameter_type == Parameter.WIND: return "Vento"
+        if self.parameter_type  == Parameter.PRESSURE: return "Pressão Atmosférica"
+        if self.parameter_type  == Parameter.AIR_TEMPERATURE: return "Temperatura do Ar"
+        if self.parameter_type  == Parameter.PH: return "Ph"
+        if self.parameter_type  == Parameter.SOIL_UMIDITY: return "Umidade do solo"
+        if self.parameter_type  == Parameter.AIR_UMIDITY: return "Umidade do ar"
+        if self.parameter_type  == Parameter.RAIN: return "Índice Pluviométrico"
 
 
 class Reading(models.Model):

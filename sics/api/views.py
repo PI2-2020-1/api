@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.core import serializers
 from .serializers import CustomUserSerializer, ReadingSerializer, StationSerializer, ParameterSerialize
 from .models import User, Plantation, Reading, Station, Parameter
+from .util import send_alerts
 
 
 class SignUpVerification(APIView):
@@ -24,15 +25,17 @@ class SignUpVerification(APIView):
 
 class TelegramVerification(APIView):
 
-    def get(self, request, telegram):
+    def get(self, request, telegram, chat_id):
         user = get_object_or_404(User, telegram=telegram)
+        user.chat_id = chat_id
+        user.save()
         
         if user.responsible_plantation: 
             plantation = get_object_or_404(Plantation, responsible=user)
         else: 
             plantation = get_object_or_404(Plantation, employees__in=user)
 
-        stations = Station.objects.filter(plantation__pk=plantation.pk)
+        stations = Station.objects.filter(plantation__pk=plantation.pk).order_by('number')
 
         return JsonResponse(
             {'full_name': user.full_name, 
@@ -83,7 +86,7 @@ class EmployeesList(APIView):
 
         employee = get_object_or_404(User, cpf=data['cpf'])
         employee.delete()
-        
+
         return Response(status=200)
 
 
@@ -110,6 +113,7 @@ class LatestData(APIView):
     def post(self, request, station_pk):
         str_args = request.body.decode('utf-8')
         data = json.loads(str_args)
+        alerts = []
 
         for obj in data:
             parameter = get_object_or_404(
@@ -120,9 +124,10 @@ class LatestData(APIView):
                 station=get_object_or_404(Station, pk=station_pk)
             )
 
-            # VERIFICAR SE EST�O DENTRO DOS LIMITES AQUI
-
-        # NOTIFICAR BOT AQUI
+            if not parameter.min_value <= obj['value'] <= parameter.max_value:
+                alerts.append(reading)
+            
+        send_alerts(alerts)
 
         return Response(status=200)
 
@@ -139,7 +144,6 @@ class Report(APIView):
 
             readings = Reading.objects.filter(
                 time__range=[data['start'], data['end']],
-                # CORRIGIR PARA NUM E NÃO PK
                 station__in=data['station_pk_list'],
                 parameter__parameter_type=p
             ).order_by('-time')
