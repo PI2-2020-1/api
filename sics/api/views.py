@@ -72,6 +72,19 @@ class EmployeesList(APIView):
         plantation.employees.add(employee)
 
         return Response(status=200)
+    
+    def delete(self, request, username, format=None):
+        user = get_object_or_404(User, username=username)
+
+        plantation = get_object_or_404(Plantation, responsible=user.pk)
+
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        employee = get_object_or_404(User, cpf=data['cpf'])
+        employee.delete()
+        
+        return Response(status=200)
 
 
 class LatestData(APIView):
