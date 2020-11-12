@@ -31,7 +31,7 @@ def create_super_user(username, email):
         raise ValidationError("An error occurred. Stopping the script")
 
 
-def create_user(full_name, telegram, username, email, cpf, is_responsible, is_active):
+def create_user(full_name, telegram, username, email, cpf, is_active):
 
     password = create_password()
 
@@ -40,7 +40,6 @@ def create_user(full_name, telegram, username, email, cpf, is_responsible, is_ac
             full_name=full_name,
             telegram=telegram,
             cpf=cpf,
-            is_responsible=is_responsible,
             username=username,
             email=email,
             password=password,
@@ -94,7 +93,6 @@ def populate():
         username='geovana',
         email='geovana@email.com',
         cpf='111111111111',
-        is_responsible=True,
         is_active=True
     )
 
@@ -104,7 +102,6 @@ def populate():
         username='gabriela',
         email='gabriela@email.com',
         cpf='222222222222',
-        is_responsible=False,
         is_active=True
     )
 
@@ -114,7 +111,6 @@ def populate():
         username='vinicius',
         email='vinicius@email.com',
         cpf='33333333333',
-        is_responsible=False,
         is_active=False
     )
 
@@ -124,7 +120,6 @@ def populate():
         username='caue',
         email='caue@email.com',
         cpf='44444444444',
-        is_responsible=False,
         is_active=False
     )
 
@@ -134,7 +129,6 @@ def populate():
         username='thiago',
         email='thiago@email.com',
         cpf='5555555555',
-        is_responsible=False,
         is_active=True
     )
     

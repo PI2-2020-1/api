@@ -4,6 +4,7 @@ from allauth.account import app_settings as allauth_settings
 from allauth.utils import (email_address_exists, get_username_max_length)
 from allauth.account.adapter import get_adapter
 from .models import User, Reading, Parameter, Plantation, Station
+from django.db.models import Q
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -57,10 +58,45 @@ class CustomEmployeeSerializer(serializers.ModelSerializer):
         fields = ('full_name', 'cpf', 'is_active', 'email')
 
 
+class StationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Station
+        fields = '__all__' 
+
+
+class PlantationSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    stations = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Plantation
+        fields = ('name', 'stations')
+
+    def get_name(self, instance):
+        return instance.farm + " - " + instance.name
+    
+    def get_stations(self, instance):
+        stations = Station.objects.filter(plantation=instance)
+        return StationSerializer(stations, many=True).data
+
+
 class CustomUserSerializer(serializers.ModelSerializer):  
+    plantations = serializers.SerializerMethodField()
+    is_responsible = serializers.SerializerMethodField()
+
     class Meta: 
         model = User 
-        fields = ('full_name', 'cpf', 'email', 'username', 'telegram', 'is_responsible')
+        fields = ('full_name', 'cpf', 'email', 'username', 'telegram', 'is_responsible', 'plantations')
+    
+    def get_plantations(self, instance):
+        if instance.is_responsible():   
+            plantantions = Plantation.objects.filter(responsible=instance)
+        else:
+            plantantions = Plantation.objects.filter(employees=instance)
+        return PlantationSerializer(plantantions, many=True).data
+    
+    def get_is_responsible(self, instance):
+        return instance.is_responsible()
 
 
 class ReadingSerializer(serializers.ModelSerializer):
@@ -72,12 +108,6 @@ class ReadingSerializer(serializers.ModelSerializer):
     
     def get_parameter(self, instance):
         return instance.parameter.parameter_type
-
-
-class StationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Station
-        fields = '__all__' 
 
 
 class ParameterSerialize(serializers.ModelSerializer):

@@ -7,11 +7,13 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=70)
     cpf = models.CharField(max_length=12, unique=True)
     telegram = models.CharField(max_length=30, unique=True)
-    is_responsible = models.BooleanField(default=False)
     chat_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.full_name
+
+    def is_responsible(self):
+        return Plantation.objects.filter(responsible=self).exists()
 
 
 class Plantation(models.Model):

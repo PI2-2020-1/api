@@ -39,28 +39,24 @@ class Profile(APIView):
         serializer = CustomUserSerializer(user)
 
         return JsonResponse(serializer.data, safe=False)
+
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+
+        serializer = CustomUserSerializer(user)
+
+        return JsonResponse(serializer.data, safe=False)
+
         
-
-
 class TelegramVerification(APIView):
 
     def get(self, request, telegram, chat_id):
         user = get_object_or_404(User, telegram=telegram)
         user.chat_id = chat_id
         user.save()
-        
-        if user.responsible_plantation: 
-            plantation = get_object_or_404(Plantation, responsible=user)
-        else: 
-            plantation = get_object_or_404(Plantation, employees__in=user)
+        serializer = CustomUserSerializer(user)
 
-        stations = Station.objects.filter(plantation__pk=plantation.pk).order_by('number')
-
-        return JsonResponse(
-            {'full_name': user.full_name, 
-            'stations': StationSerializer(stations, many=True).data
-            }
-        )
+        return JsonResponse(serializer.data, safe=False)
 
 
 class EmployeesList(APIView):
@@ -84,7 +80,6 @@ class EmployeesList(APIView):
         employee = User.objects.create_user(
             cpf=data['cpf'],
             is_active=False,
-            is_responsible=False,
             username=data['cpf'],
             telegram=data['cpf']
         )
