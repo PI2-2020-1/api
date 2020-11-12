@@ -11,4 +11,5 @@ urlpatterns = [
     path('report', views.Report.as_view()),
     path('stations/<plantation_pk>', views.ListStations.as_view()),
     path('parameter/<plantation_pk>', views.ListUpdateParameter.as_view()),
+    path('profile/<username>', views.Profile.as_view()),
 ]

@@ -51,10 +51,16 @@ class CustomRegisterSerializer(RegisterSerializer):
         return user
 
 
-class CustomUserSerializer(serializers.ModelSerializer):  
+class CustomEmployeeSerializer(serializers.ModelSerializer):  
     class Meta: 
         model = User 
         fields = ('full_name', 'cpf', 'is_active', 'email')
+
+
+class CustomUserSerializer(serializers.ModelSerializer):  
+    class Meta: 
+        model = User 
+        fields = ('full_name', 'cpf', 'email', 'username', 'telegram', 'is_responsible')
 
 
 class ReadingSerializer(serializers.ModelSerializer):

@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core import serializers
-from .serializers import CustomUserSerializer, ReadingSerializer, StationSerializer, ParameterSerialize
+from .serializers import CustomUserSerializer, CustomEmployeeSerializer, ReadingSerializer, StationSerializer, ParameterSerialize
 from .models import User, Plantation, Reading, Station, Parameter
 from .util import send_alerts
 
@@ -21,6 +21,25 @@ class SignUpVerification(APIView):
             return Response(status=401)
 
         return Response(status=200)
+
+
+class Profile(APIView):
+
+    def post(self, request, username):
+        user = get_object_or_404(User, username=username)
+
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        user.email = data['email']
+        user.telegram = data['telegram']
+        user.full_name = data['full_name']
+        user.save()
+
+        serializer = CustomUserSerializer(user)
+
+        return JsonResponse(serializer.data, safe=False)
+        
 
 
 class TelegramVerification(APIView):
@@ -54,7 +73,7 @@ class EmployeesList(APIView):
 
         plantation = get_object_or_404(Plantation, responsible=user.pk)
         employees = plantation.employees.all()
-        serializer = CustomUserSerializer(employees, many=True)
+        serializer = CustomEmployeeSerializer(employees, many=True)
 
         return JsonResponse(serializer.data, safe=False)
 
