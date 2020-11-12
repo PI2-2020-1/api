@@ -10,6 +10,7 @@ urlpatterns = [
     path('latest/<station_pk>', views.LatestData.as_view()),
     path('report', views.Report.as_view()),
     path('stations/<plantation_pk>', views.ListStations.as_view()),
-    path('parameter/<plantation_pk>', views.ListUpdateParameter.as_view()),
+    path('parameter/<pk>', views.ListUpdateParameter.as_view()),
     path('profile/<username>', views.Profile.as_view()),
+    path('parameters/<plantation_pk>', views.Parameters.as_view()),
 ]

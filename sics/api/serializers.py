@@ -110,7 +110,7 @@ class ReadingSerializer(serializers.ModelSerializer):
         return instance.parameter.parameter_type
 
 
-class ParameterSerialize(serializers.ModelSerializer):
+class ParameterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Parameter
         fields = '__all__' 

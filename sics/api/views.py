@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core import serializers
-from .serializers import CustomUserSerializer, CustomEmployeeSerializer, ReadingSerializer, StationSerializer, ParameterSerialize
+from .serializers import CustomUserSerializer, CustomEmployeeSerializer, ReadingSerializer, StationSerializer, ParameterSerializer
 from .models import User, Plantation, Reading, Station, Parameter
 from .util import send_alerts
 
@@ -197,16 +197,38 @@ class ListStations(APIView):
 
 class ListUpdateParameter(APIView):
 
-    def patch(self, request, plantation_pk):
-        str_args = request.body.decode('utf-8')
-        data = json.loads(str_args)
+    def get_object(self, pk):
+        try:
+            return Parameter.objects.get(pk=pk)
+        except Parameter.DoesNotExist:
+            raise Http404
 
-        for obj in data:
-            parameter = Parameter.objects.update(
-                parameter_type=obj["parameter_type"],
-                min_value=obj["min_value"],
-                max_value=obj["max_value"],
-                plantation = get_object_or_404(Plantation, pk=plantation_pk)
-            )
-            
-        return Response(status=200)
+
+    def get(self, request, pk):
+        parameter = get_object_or_404(Parameter, pk=pk)
+        serializer = ParameterSerializer(parameter)
+
+        return JsonResponse(serializer.data, safe=False)
+
+
+    def put(self, request, pk):
+        parameter = self.get_object(pk)
+        serializer = ParameterSerializer(parameter, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class Parameters(APIView):
+    
+    def get(self, request, plantation_pk):
+        plantation = get_object_or_404(Plantation, pk=plantation_pk)
+
+        parameter = Parameter.objects.filter(plantation=plantation_pk)
+
+        serializer = ParameterSerializer(parameter, many=True)
+
+        return JsonResponse(serializer.data, safe=False)
