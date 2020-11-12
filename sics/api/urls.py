@@ -13,4 +13,7 @@ urlpatterns = [
     path('parameter/<pk>', views.ListUpdateParameter.as_view()),
     path('profile/<username>', views.Profile.as_view()),
     path('parameters/<plantation_pk>', views.Parameters.as_view()),
+    path('reading/<station_pk>', views.ListReading.as_view()),
+    path('plantation/<plantation_pk>', views.Plantations.as_view()),
+
 ]

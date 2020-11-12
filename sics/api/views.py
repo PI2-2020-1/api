@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core import serializers
-from .serializers import CustomUserSerializer, CustomEmployeeSerializer, ReadingSerializer, StationSerializer, ParameterSerializer
+from .serializers import CustomPlantationSerializer, CustomUserSerializer, CustomEmployeeSerializer, ReadingSerializer, StationSerializer, ParameterSerializer, CustomReadingSerializer
 from .models import User, Plantation, Reading, Station, Parameter
 from .util import send_alerts
 
@@ -232,3 +232,45 @@ class Parameters(APIView):
         serializer = ParameterSerializer(parameter, many=True)
 
         return JsonResponse(serializer.data, safe=False)
+
+
+class ListReading(APIView):
+
+        def get(self, request, station_pk):
+
+            station = get_object_or_404(Station, pk=station_pk)
+
+            latest = []
+
+            parameters = Parameter.get_all_types()
+            for p in parameters:
+                readings = Reading.objects.filter(
+                    station=station_pk,
+                    parameter__parameter_type=p
+                ).order_by('-time')
+                if readings:
+                    latest.append(readings[0])
+
+            serializer = CustomReadingSerializer(latest, many=True)
+
+            return JsonResponse(serializer.data, safe=False)
+
+class Plantations(APIView):
+
+    def get(self, request, plantation_pk):
+            plantation = get_object_or_404(Plantation, pk=plantation_pk)
+
+            latest = []
+
+            #plantations = Plantation
+            #for p in plantations:
+            #    parameters = Parameter.objects.filter(
+            #        plantation=plantation_pk
+            #    ).order_by('-parameter_type')
+            #    if parameters:
+            #        latest.append(parameters[0])
+
+
+            serializer = CustomPlantationSerializer(plantation)
+
+            return JsonResponse(serializer.data, safe=False)

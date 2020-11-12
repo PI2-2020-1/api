@@ -59,9 +59,16 @@ class CustomEmployeeSerializer(serializers.ModelSerializer):
 
 
 class StationSerializer(serializers.ModelSerializer):
+    readings = serializers.SerializerMethodField()
+
     class Meta:
         model = Station
-        fields = '__all__' 
+        fields = ('number', 'readings')
+
+
+    def get_readings(self, instance):
+        readings = Reading.objects.filter(station=instance)
+        return CustomReadingSerializer(readings, many=True).data
 
 
 class PlantationSerializer(serializers.ModelSerializer):
@@ -109,8 +116,73 @@ class ReadingSerializer(serializers.ModelSerializer):
     def get_parameter(self, instance):
         return instance.parameter.parameter_type
 
+class CustomReadingSerializer(serializers.ModelSerializer):
+    parameters = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Reading 
+        fields = ('value', 'time', 'parameters')
+
+    def get_parameters(self, instance):
+        parameters = Parameter.objects.filter(id=instance.parameter.id)
+        return CustomParameterSerializer(parameters, many=True).data
+
 
 class ParameterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Parameter
-        fields = '__all__' 
+        fields = ('__all__') 
+
+
+class CustomParameterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Parameter
+        fields = ('parameter_type', 'min_value', 'max_value') 
+
+
+class CusstomReadingSerializer(serializers.ModelSerializer):  
+    stations = serializers.SerializerMethodField()
+    parameters = serializers.SerializerMethodField()
+
+    class Meta: 
+        model = Reading  
+        fields = ('id','value', 'time', 'parameters', 'stations')
+    
+    def get_stations(self, instance):
+        stations = Station.objects.filter(id=instance.station.id)
+        return StationSerializer(stations, many=True).data
+
+    def get_parameters(self, instance):
+        parameters = Parameter.objects.filter(id=instance.parameter.id)
+        return ParameterSerializer(parameters, many=True).data
+
+
+#class CustomThiasgoSerializer(serializers.ModelSerializer):  
+#    plantations = serializers.SerializerMethodField()
+#    is_responsible = serializers.SerializerMethodField()
+#
+#    class Meta: 
+#        model = User 
+#        fields = ('full_name', 'cpf', 'email', 'username', 'telegram', 'is_responsible', 'plantations')
+#    
+#    def get_plantations(self, instance):
+#        if instance.is_responsible():   
+#            plantantions = Plantation.objects.filter(responsible=instance)
+#       else:
+#            plantantions = Plantation.objects.filter(employees=instance)
+#        return PlantationSerializer(plantantions, many=True).data
+#    
+#    def get_is_responsible(self, instance):
+#        return instance.is_responsible()
+
+
+class CustomPlantationSerializer(serializers.ModelSerializer):  
+    users = serializers.SerializerMethodField()
+
+    class Meta: 
+        model = Plantation 
+        fields = ('farm', 'name', 'users')
+    
+    def get_users(self, instance):
+        users = User.objects.filter(id=instance.responsible.id)
+        return CustomUserSerializer(users, many=True).data
