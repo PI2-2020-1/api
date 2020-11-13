@@ -255,21 +255,12 @@ class ListReading(APIView):
 
             return JsonResponse(serializer.data, safe=False)
 
+
 class Plantations(APIView):
 
     def get(self, request, plantation_pk):
+
             plantation = get_object_or_404(Plantation, pk=plantation_pk)
-
-            latest = []
-
-            #plantations = Plantation
-            #for p in plantations:
-            #    parameters = Parameter.objects.filter(
-            #        plantation=plantation_pk
-            #    ).order_by('-parameter_type')
-            #    if parameters:
-            #        latest.append(parameters[0])
-
 
             serializer = CustomPlantationSerializer(plantation)
 
