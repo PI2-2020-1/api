@@ -47,7 +47,7 @@ class Profile(APIView):
 
         return JsonResponse(serializer.data, safe=False)
 
-        
+
 class TelegramVerification(APIView):
 
     def get(self, request, telegram, chat_id):
@@ -89,7 +89,7 @@ class EmployeesList(APIView):
         plantation.employees.add(employee)
 
         return Response(status=200)
-    
+
     def delete(self, request, username, format=None):
         user = get_object_or_404(User, username=username)
 
@@ -140,7 +140,7 @@ class LatestData(APIView):
 
             if not parameter.min_value <= obj['value'] <= parameter.max_value:
                 alerts.append(reading)
-            
+
         send_alerts(alerts)
 
         return Response(status=200)
@@ -180,7 +180,6 @@ class ListStations(APIView):
 
         return JsonResponse(serializer.data, safe=False)
 
-
     # def post(self, request, plantation_pk):
     #     str_args = request.body.decode('utf-8')
     #     data = json.loads(str_args)
@@ -190,9 +189,8 @@ class ListStations(APIView):
     #             number=obj["number"],
     #             plantation = get_object_or_404(Plantation, pk=plantation_pk)
     #         )
-            
-    #     return Response(status=200)
 
+    #     return Response(status=200)
 
 
 class ListUpdateParameter(APIView):
@@ -203,13 +201,11 @@ class ListUpdateParameter(APIView):
         except Parameter.DoesNotExist:
             raise Http404
 
-
     def get(self, request, pk):
         parameter = get_object_or_404(Parameter, pk=pk)
         serializer = ParameterSerializer(parameter)
 
         return JsonResponse(serializer.data, safe=False)
-
 
     def put(self, request, pk):
         parameter = self.get_object(pk)
@@ -221,9 +217,8 @@ class ListUpdateParameter(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class Parameters(APIView):
-    
+
     def get(self, request, plantation_pk):
         plantation = get_object_or_404(Plantation, pk=plantation_pk)
 
@@ -233,35 +228,62 @@ class Parameters(APIView):
 
         return JsonResponse(serializer.data, safe=False)
 
+    def post(self, request, plantation_pk):
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+
+        parameters = []
+
+        for obj in data:
+            if obj['id'] == "":
+                p = Parameter.objects.create(
+                    parameter_type=obj['parameter_type'],
+                    min_value=obj['min_value'],
+                    max_value=obj['max_value'],
+                    plantation__pk=obj['plantation']
+                )
+            else:
+                p = get_object_or_404(Parameter, plantation__pk=plantation_pk, parameter_type=obj['parameter_type'])
+                p.parameter_type = obj['parameter_type']
+                p.min_value = min_value = obj['min_value']
+                p.max_value = obj['max_value']
+                p.plantation.pk = obj['plantation']
+
+            parameters.append(p)
+
+            serializer = ParameterSerializer(parameters, many=True)
+
+        return JsonResponse(serializer.data, safe=False)
+
 
 class ListReading(APIView):
 
-        def get(self, request, station_pk):
+    def get(self, request, station_pk):
 
-            station = get_object_or_404(Station, pk=station_pk)
+        station = get_object_or_404(Station, pk=station_pk)
 
-            latest = []
+        latest = []
 
-            parameters = Parameter.get_all_types()
-            for p in parameters:
-                readings = Reading.objects.filter(
-                    station=station_pk,
-                    parameter__parameter_type=p
-                ).order_by('-time')
-                if readings:
-                    latest.append(readings[0])
+        parameters = Parameter.get_all_types()
+        for p in parameters:
+            readings = Reading.objects.filter(
+                station=station_pk,
+                parameter__parameter_type=p
+            ).order_by('-time')
+            if readings:
+                latest.append(readings[0])
 
-            serializer = CustomReadingSerializer(latest, many=True)
+        serializer = CustomReadingSerializer(latest, many=True)
 
-            return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(serializer.data, safe=False)
+
 
 
 class Plantations(APIView):
 
     def get(self, request, plantation_pk):
+        plantation = get_object_or_404(Plantation, pk=plantation_pk)
 
-            plantation = get_object_or_404(Plantation, pk=plantation_pk)
+        serializer = CustomPlantationSerializer(plantation)
 
-            serializer = CustomPlantationSerializer(plantation)
-
-            return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(serializer.data, safe=False)
