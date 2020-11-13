@@ -195,26 +195,41 @@ class ListStations(APIView):
 
 class ListUpdateParameter(APIView):
 
-    def get_object(self, pk):
-        try:
-            return Parameter.objects.get(pk=pk)
-        except Parameter.DoesNotExist:
-            raise Http404
+    # def get_object(self, pk):
+    #     try:
+    #         return Parameter.objects.get(pk=pk)
+    #     except Parameter.DoesNotExist:
+    #         raise Http404
 
-    def get(self, request, pk):
-        parameter = get_object_or_404(Parameter, pk=pk)
-        serializer = ParameterSerializer(parameter)
+    # def get(self, request, pk):
+    #     parameter = get_object_or_404(Parameter, pk=pk)
+    #     serializer = ParameterSerializer(parameter)
 
-        return JsonResponse(serializer.data, safe=False)
+    #     return JsonResponse(serializer.data, safe=False)
 
-    def put(self, request, pk):
-        parameter = self.get_object(pk)
-        serializer = ParameterSerializer(parameter, data=request.data)
+    def post(self, request, station_pk):
+        str_args = request.body.decode('utf-8')
+        data = json.loads(str_args)
+   
+        plantation = get_object_or_404(Station, pk=station_pk).plantation
+        parameter = Parameter.objects.filter(
+            plantation=plantation, parameter_type=data['parameter_type']).first()
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if parameter:
+            Parameter.objects.create(
+                parameter_type=data['parameter_type'],
+                min_value=data['min_value'],
+                max_value=data['max_value'],
+                plantation=plantation
+            )
+        else:
+            p = parameter
+            p.parameter_type = data['parameter_type']
+            p.min_value = min_value = data['min_value']
+            p.max_value = data['max_value']
+            p.save()
+
+        return Response(status=200)
 
 
 class Parameters(APIView):
@@ -243,11 +258,12 @@ class Parameters(APIView):
                     plantation__pk=obj['plantation']
                 )
             else:
-                p = get_object_or_404(Parameter, plantation__pk=plantation_pk, parameter_type=obj['parameter_type'])
+                p = get_object_or_404(
+                    Parameter, plantation__pk=plantation_pk, parameter_type=obj['parameter_type'])
                 p.parameter_type = obj['parameter_type']
                 p.min_value = min_value = obj['min_value']
                 p.max_value = obj['max_value']
-                p.plantation.pk = obj['plantation']
+                p.save()
 
             parameters.append(p)
 
@@ -276,7 +292,6 @@ class ListReading(APIView):
         serializer = CustomReadingSerializer(latest, many=True)
 
         return JsonResponse(serializer.data, safe=False)
-
 
 
 class Plantations(APIView):
