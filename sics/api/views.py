@@ -140,7 +140,7 @@ class LatestData(APIView):
 
             if not parameter.min_value <= obj['value'] <= parameter.max_value:
                 alerts.append(reading)
-
+        
         send_alerts(alerts)
 
         return Response(status=200)
@@ -215,7 +215,7 @@ class ListUpdateParameter(APIView):
         parameter = Parameter.objects.filter(
             plantation=plantation, parameter_type=data['parameter_type']).first()
 
-        if parameter:
+        if not parameter:
             Parameter.objects.create(
                 parameter_type=data['parameter_type'],
                 min_value=data['min_value'],
