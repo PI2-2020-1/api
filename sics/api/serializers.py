@@ -150,20 +150,14 @@ class CustomStationSerializer(serializers.ModelSerializer):
 
 class CustomPlantationSerializer(serializers.ModelSerializer):  
     users = serializers.SerializerMethodField()
-    parameters = serializers.SerializerMethodField()
-
 
     class Meta: 
         model = Plantation 
-        fields = ('farm', 'name', 'users', 'parameters')
+        fields = ('farm', 'name', 'users')
     
     def get_users(self, instance):
         users = User.objects.filter(id=instance.responsible.id)
         return CustomUserPlantationSerializer(users, many=True).data
-
-    def get_parameters(self, instance):
-        parameters = Parameter.objects.filter(id=instance.parameter.id)
-        return CustomParameterSerializer(parameters, many=True).data
 
 
 class CustomUserPlantationSerializer(serializers.ModelSerializer):  
