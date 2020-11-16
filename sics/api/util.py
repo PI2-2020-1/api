@@ -23,5 +23,5 @@ def send_alerts(alerts):
         text += reading.parameter.get_parameter_name() + ": " + str(reading.value) + "\n"
 
     for u in plantation.get_all_users():
-        if u.chat_id:
+        if u.chat_id != None:
             send_telegram_message(text, u.chat_id)
